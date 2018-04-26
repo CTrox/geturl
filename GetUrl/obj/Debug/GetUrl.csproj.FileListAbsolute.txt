@@ -7,6 +7,5 @@ c:\users\noelw\documents\visual studio 2017\Projects\GetUrl\GetUrl\obj\Debug\Get
 C:\Users\noelw\Source\Repos\geturl\GetUrl\bin\Debug\GetUrl.dll
 C:\Users\noelw\Source\Repos\geturl\GetUrl\bin\Debug\GetUrl.pdb
 C:\Users\noelw\Source\Repos\geturl\GetUrl\bin\Debug\System.Management.Automation.dll
-C:\Users\noelw\Source\Repos\geturl\GetUrl\obj\Debug\GetUrl.csprojResolveAssemblyReference.cache
 C:\Users\noelw\Source\Repos\geturl\GetUrl\obj\Debug\GetUrl.dll
 C:\Users\noelw\Source\Repos\geturl\GetUrl\obj\Debug\GetUrl.pdb

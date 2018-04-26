@@ -1,40 +1,68 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Management.Automation;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace GetUrl
 {
     [Cmdlet(VerbsCommon.Get, "Url2")]
     public class GetUrlCommand2 : PSCmdlet
     {
-        [Parameter(Position = 1)]
-        public string Message { get; set; } = string.Empty;
+        private readonly List<string> _bodyLinesFromPipeLine = new List<string>();
+
+
+
+        [Parameter(Mandatory = true, Position = 1)]
+        public string Url
+        {
+            get; set;
+        }
+
+        [Parameter(ValueFromPipeline = true)]
+        public string BodyLineFromPipeline
+        {
+            get; set;
+        }
+
+        [Parameter()]
+        public string Body
+        {
+            get; set;
+        }
+
+
+
+        protected override void ProcessRecord()
+        {
+            if(BodyLineFromPipeline != null)
+                _bodyLinesFromPipeLine.Add(BodyLineFromPipeline);
+
+            base.ProcessRecord();
+        }
 
         protected override void EndProcessing()
         {
+            string bodyFromPipeline;
 
-            var client = new HttpClient();
-            client.BaseAddress = new Uri("http://google.ch");
-            client.DefaultRequestHeaders.Accept.Clear();
-            try
-            {
-                var task = client.GetAsync("/");
-                task.Wait();
+            if(_bodyLinesFromPipeLine.Count > 0)
+                bodyFromPipeline = String.Join("\n", _bodyLinesFromPipeLine);
+            else
+                bodyFromPipeline = null;
 
-                var response = task.Result;
-                if(response.IsSuccessStatusCode)
-                {
-                    WriteObject(response);
-                }
-            }
-            catch(Exception e)
-            {
-                this.WriteObject(e.Message);
-            }
+            if(bodyFromPipeline != null && Body != null)
+                throw new ArgumentException("Either use pipelineing or specify the body manually. Both operations together are not supported.");
+
+            Exec(Url, bodyFromPipeline ?? Body);
 
             base.EndProcessing();
+        }
+
+        private void Exec(string url, string body = null)
+        {
+            if(url == null)
+                throw new ArgumentNullException(nameof(url));
+
+            WriteObject($"Url: {url}");
+            WriteObject($"Body: {body ?? "null"}");
         }
     }
 }
