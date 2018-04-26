@@ -1,0 +1,6 @@
+c:\users\noelw\documents\visual studio 2017\Projects\GetUrl\GetUrl\bin\Debug\GetUrl.dll
+c:\users\noelw\documents\visual studio 2017\Projects\GetUrl\GetUrl\bin\Debug\GetUrl.pdb
+c:\users\noelw\documents\visual studio 2017\Projects\GetUrl\GetUrl\bin\Debug\System.Management.Automation.dll
+c:\users\noelw\documents\visual studio 2017\Projects\GetUrl\GetUrl\obj\Debug\GetUrl.csprojResolveAssemblyReference.cache
+c:\users\noelw\documents\visual studio 2017\Projects\GetUrl\GetUrl\obj\Debug\GetUrl.dll
+c:\users\noelw\documents\visual studio 2017\Projects\GetUrl\GetUrl\obj\Debug\GetUrl.pdb
