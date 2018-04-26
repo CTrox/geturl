@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Management.Automation;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace GetUrl
 {
@@ -23,6 +25,7 @@ namespace GetUrl
             get; set;
         }
 
+        [Alias("B")]
         [Parameter()]
         public string Body
         {
@@ -41,6 +44,7 @@ namespace GetUrl
 
         protected override void EndProcessing()
         {
+            string url = Url;
             string bodyFromPipeline;
 
             if(_bodyLinesFromPipeLine.Count > 0)
@@ -49,20 +53,48 @@ namespace GetUrl
                 bodyFromPipeline = null;
 
             if(bodyFromPipeline != null && Body != null)
-                throw new ArgumentException("Either use pipelineing or specify the body manually. Both operations together are not supported.");
+                throw new ArgumentException("Either use pipelineing or specify the body parameter. But don't do both.");
 
             Exec(Url, bodyFromPipeline ?? Body);
 
             base.EndProcessing();
         }
 
+
+
         private void Exec(string url, string body = null)
         {
             if(url == null)
                 throw new ArgumentNullException(nameof(url));
 
-            WriteObject($"Url: {url}");
-            WriteObject($"Body: {body ?? "null"}");
+            using(var client = new HttpClient())
+            {
+                HttpResponseMessage httpResponse;
+                {
+                    var requestTask = client.GetAsync(url);
+                    requestTask.Wait();
+                    httpResponse = requestTask.Result;
+                }
+                
+                if(httpResponse.IsSuccessStatusCode)
+                {
+                    string stringResponse;
+                    {
+                        var readTask = httpResponse.Content.ReadAsStringAsync();
+                        readTask.Wait();
+                        stringResponse = readTask.Result;
+                    }
+
+                    foreach(var responseLine in Regex.Split(stringResponse, "\r\n|\r|\n"))
+                    {
+                        WriteObject(responseLine);
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Bad Request: {httpResponse.StatusCode}");
+                }
+            }
         }
     }
 }
