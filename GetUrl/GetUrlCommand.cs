@@ -9,14 +9,14 @@ namespace GetUrl
     [Cmdlet(VerbsCommon.Get, "Url")]
     public class GetUrlCommand : PSCmdlet
     {
-        [Parameter(Position = 1)]
-        public string Message { get; set; } = string.Empty;
+        [Parameter(Position = 0, Mandatory = true)]
+        public string Url { get; set; } = string.Empty;
 
         protected override void EndProcessing()
         {
 
             var client = new HttpClient();
-            client.BaseAddress = new Uri("http://google.ch");
+            client.BaseAddress = new Uri(Url);
             client.DefaultRequestHeaders.Accept.Clear();
             try
             {
