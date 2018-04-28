@@ -12,8 +12,6 @@ namespace GetUrl
     {
         private readonly List<string> _bodyLinesFromPipeLine = new List<string>();
 
-
-
         [Parameter(Mandatory = true, Position = 1)]
         public string Url
         {
@@ -32,8 +30,6 @@ namespace GetUrl
         {
             get; set;
         }
-
-
 
         protected override void ProcessRecord()
         {
@@ -94,7 +90,6 @@ namespace GetUrl
                         readTask.Wait();
                         stringResponse = readTask.Result;
                     }
-
                     foreach(var responseLine in Regex.Split(stringResponse, "\r\n|\r|\n"))
                     {
                         WriteObject(responseLine);
