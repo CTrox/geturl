@@ -73,8 +73,6 @@ namespace GetUrl
 
         private void Exec(Uri url, string body = null)
         {
-            WriteObject(url.Authority);
-            WriteObject(url.AbsolutePath);
             using(var client = new HttpClient())
             {
                 HttpResponseMessage httpResponse;
