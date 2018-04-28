@@ -41,7 +41,7 @@ namespace GetUrl
 
         protected override void EndProcessing()
         {
-            string url = ensureScheme(Url);
+            var url = ensureScheme(Url);
             string bodyFromPipeline;
 
             if(_bodyLinesFromPipeLine.Count > 0)
@@ -57,19 +57,24 @@ namespace GetUrl
             base.EndProcessing();
         }
 
-        private string ensureScheme(string url)
+        private Uri ensureScheme(string url)
         {
             try {
                 var uri = new Uri(url);
+                if (uri.Scheme != "http" && uri.Scheme != "https") {
+                  return new Uri("http://" + url);
+                }
+                return uri;
             } catch(UriFormatException) {
-              // scheme not supplied, prepending http
-              return "http://" + url;
+                // scheme not supplied, prepending http
+                return new Uri("http://" + url);
             }
-            return url;
         }
 
-        private void Exec(string url, string body = null)
+        private void Exec(Uri url, string body = null)
         {
+            WriteObject(url.Authority);
+            WriteObject(url.AbsolutePath);
             using(var client = new HttpClient())
             {
                 HttpResponseMessage httpResponse;
