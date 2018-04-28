@@ -70,9 +70,6 @@ namespace GetUrl
 
         private void Exec(string url, string body = null)
         {
-            if(url == null)
-                throw new ArgumentNullException(nameof(url));
-
             using(var client = new HttpClient())
             {
                 HttpResponseMessage httpResponse;
