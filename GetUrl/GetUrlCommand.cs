@@ -95,7 +95,7 @@ namespace GetUrl
                             break;
                         case "POST":
                             var postContent = new StringContent(body, Encoding.UTF8, "application/json");
-                            requestTask = client.PostAsync(url, postContent);
+                            requestTask = client.PostAsync(url, postContent ?? throw new InvalidOperationException($"Body must be set when using {request}."));
                             break;
                         case "PUT":
                             var putContent = new StringContent(body, Encoding.UTF8, "application/json");
