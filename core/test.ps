@@ -1,2 +1,4 @@
 Import-Module ./bin/Debug/netstandard2.0/GetUrl.dll
-Get-Url example.org
+Get-Url http://localhost:8000/test
+Get-Content test.ps | Get-Url -X POST localhost:8000
+Get-Content test.ps | Get-Url -X PUT localhost:8000
