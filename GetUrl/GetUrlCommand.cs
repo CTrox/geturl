@@ -4,6 +4,8 @@ using System.Management.Automation;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Text;
 
 namespace GetUrl
 {
@@ -31,6 +33,13 @@ namespace GetUrl
             get; set;
         }
 
+        [Alias("X")]
+        [Parameter()]
+        public string Request
+        {
+            get; set;
+        } = "GET";
+
         protected override void ProcessRecord()
         {
             if(BodyLineFromPipeline != null)
@@ -52,7 +61,7 @@ namespace GetUrl
             if(bodyFromPipeline != null && Body != null)
                 throw new ArgumentException("Either use pipelineing or specify the body parameter. But don't do both.");
 
-            Exec(url, bodyFromPipeline ?? Body);
+            Exec(url, Request, bodyFromPipeline ?? Body);
 
             base.EndProcessing();
         }
@@ -71,13 +80,30 @@ namespace GetUrl
             }
         }
 
-        private void Exec(Uri url, string body = null)
+        private void Exec(Uri url, string request, string body = null)
         {
             using(var client = new HttpClient())
             {
                 HttpResponseMessage httpResponse;
                 {
-                    var requestTask = client.GetAsync(url);
+                    Task<HttpResponseMessage> requestTask;
+                    StringContent content;
+                    switch (request)
+                    {
+                        case "GET":
+                            requestTask = client.GetAsync(url);
+                            break;
+                        case "POST":
+                            content = new StringContent(body, Encoding.UTF8, "application/json");
+                            requestTask = client.PostAsync(url, content);
+                            break;
+                        case "PUT":
+                            content = new StringContent(body, Encoding.UTF8, "application/json");
+                            requestTask = client.PutAsync(url, content);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Request Method {request} not implemented");
+                    }
                     requestTask.Wait();
                     httpResponse = requestTask.Result;
                 }
