@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Management.Automation;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Text;
 
@@ -40,6 +39,8 @@ namespace GetUrl
             get; set;
         } = "GET";
 
+
+
         protected override void ProcessRecord()
         {
             if(BodyLineFromPipeline != null)
@@ -50,7 +51,7 @@ namespace GetUrl
 
         protected override void EndProcessing()
         {
-            var url = ensureScheme(Url);
+            var url = EnsureHttpScheme(Url);
             string bodyFromPipeline;
 
             if(_bodyLinesFromPipeLine.Count > 0)
@@ -66,7 +67,7 @@ namespace GetUrl
             base.EndProcessing();
         }
 
-        private Uri ensureScheme(string url)
+        private Uri EnsureHttpScheme(string url)
         {
             try {
                 var uri = new Uri(url);
@@ -87,23 +88,23 @@ namespace GetUrl
                 HttpResponseMessage httpResponse;
                 {
                     Task<HttpResponseMessage> requestTask;
-                    StringContent content;
                     switch (request)
                     {
                         case "GET":
                             requestTask = client.GetAsync(url);
                             break;
                         case "POST":
-                            content = new StringContent(body, Encoding.UTF8, "application/json");
-                            requestTask = client.PostAsync(url, content);
+                            var postContent = new StringContent(body, Encoding.UTF8, "application/json");
+                            requestTask = client.PostAsync(url, postContent);
                             break;
                         case "PUT":
-                            content = new StringContent(body, Encoding.UTF8, "application/json");
-                            requestTask = client.PutAsync(url, content);
+                            var putContent = new StringContent(body, Encoding.UTF8, "application/json");
+                            requestTask = client.PutAsync(url, putContent);
                             break;
                         default:
                             throw new InvalidOperationException($"Request Method {request} not implemented");
                     }
+
                     requestTask.Wait();
                     httpResponse = requestTask.Result;
                 }
@@ -116,6 +117,7 @@ namespace GetUrl
                         readTask.Wait();
                         stringResponse = readTask.Result;
                     }
+
                     foreach(var responseLine in Regex.Split(stringResponse, "\r\n|\r|\n"))
                     {
                         WriteObject(responseLine);
