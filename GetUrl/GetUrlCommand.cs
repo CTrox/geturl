@@ -88,6 +88,7 @@ namespace GetUrl
                 HttpResponseMessage httpResponse;
                 {
                     Task<HttpResponseMessage> requestTask;
+                    client.DefaultRequestHeaders.Add("User-Agent", "Get-Url HTTP client");
                     switch (request)
                     {
                         case "GET":
