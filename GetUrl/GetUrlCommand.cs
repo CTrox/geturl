@@ -101,6 +101,10 @@ namespace GetUrl
                             var putContent = new StringContent(body, Encoding.UTF8, "application/json");
                             requestTask = client.PutAsync(url, putContent);
                             break;
+                        case "HEAD":
+                            var message = new HttpRequestMessage(HttpMethod.Head, url);
+                            requestTask = client.SendAsync(message);
+                            break;
                         default:
                             throw new InvalidOperationException($"Request Method {request} not implemented");
                     }
@@ -113,9 +117,17 @@ namespace GetUrl
                 {
                     string stringResponse;
                     {
-                        var readTask = httpResponse.Content.ReadAsStringAsync();
-                        readTask.Wait();
-                        stringResponse = readTask.Result;
+                        if (request == "HEAD")
+                        {
+                            stringResponse = httpResponse.Headers.ToString();
+                        }
+                        else
+                        {
+                            var readTask = httpResponse.Content.ReadAsStringAsync();
+                            readTask.Wait();
+                            stringResponse = readTask.Result;
+                        }
+
                     }
 
                     foreach(var responseLine in Regex.Split(stringResponse, "\r\n|\r|\n"))
